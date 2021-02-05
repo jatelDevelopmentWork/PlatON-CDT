@@ -352,40 +352,48 @@ int32_t platon_confidential_tx_verify(const uint8_t *tx_data, size_t tx_len);
 // platon_variable_length_result
 int32_t platon_variable_length_result(uint8_t *result, size_t result_len);
 
-    // Operation result flag
-    enum BigintResultFlag {
-       NEGATIVE = 0x01,
-       OVERFLOW = 0x02,
-    };
+// Operation result flag
+enum BigintResultFlag {
+  NEGATIVE = 0x01,
+  OVERFLOW = 0x02,
+};
 
-    // External functions for large integers
-    enum BinaryOperator
-    {
-        ADD = 0x01,
-        SUB = 0x02,
-        MUL = 0x04,
-        DIV = 0x08,
-        MOD = 0x10,
-        AND = 0x20,
-        OR = 0x40,
-        XOR = 0x80,
-    };
+// External functions for large integers
+enum BinaryOperator {
+  ADD = 0x01,
+  SUB = 0x02,
+  MUL = 0x04,
+  DIV = 0x08,
+  MOD = 0x10,
+  AND = 0x20,
+  OR = 0x40,
+  XOR = 0x80,
+};
 
-    uint32_t bigint_binary_operators(const uint8_t *left, uint8_t left_negative, const uint8_t *right, uint8_t right_negative, uint8_t *result, size_t arr_size, BinaryOperator operators);
+uint32_t bigint_binary_operators(const uint8_t *left, uint8_t left_negative,
+                                 const uint8_t *right, uint8_t right_negative,
+                                 uint8_t *result, size_t arr_size,
+                                 BinaryOperator operators);
 
-    uint32_t bigint_exp_mod(const uint8_t *left, uint8_t left_negative, const uint8_t *right, uint8_t right_negative, const uint8_t *mod, uint8_t mod_negative, uint8_t *result, size_t arr_siz);
+uint32_t bigint_exp_mod(const uint8_t *left, uint8_t left_negative,
+                        const uint8_t *right, uint8_t right_negative,
+                        const uint8_t *mod, uint8_t mod_negative,
+                        uint8_t *result, size_t arr_siz);
 
-    int32_t bigint_cmp(const uint8_t *left, uint8_t left_negative, const uint8_t *right, uint8_t right_negative, size_t arr_size);
+int32_t bigint_cmp(const uint8_t *left, uint8_t left_negative,
+                   const uint8_t *right, uint8_t right_negative,
+                   size_t arr_size);
 
-    enum ShiftDirection
-    {
-        LEFT = 0x01,
-        RIGHT = 0x02,
-    };
+enum ShiftDirection {
+  LEFT = 0x01,
+  RIGHT = 0x02,
+};
 
-    uint32_t bigint_sh(const uint8_t *origin, uint8_t origin_negative, uint32_t n, uint8_t *result, size_t arr_size, ShiftDirection direction);
+uint32_t bigint_sh(const uint8_t *origin, uint8_t origin_negative, uint32_t n,
+                   uint8_t *result, size_t arr_size, ShiftDirection direction);
 
-    uint32_t string_literal_operator(const uint8_t *str, size_t str_len, uint8_t *result, size_t arr_size);
+uint32_t string_literal_operator(const uint8_t *str, size_t str_len,
+                                 uint8_t *result, size_t arr_size);
 
 #ifdef __cplusplus
 }
