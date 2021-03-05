@@ -370,30 +370,28 @@ enum BinaryOperator {
   XOR = 0x80,
 };
 
-uint32_t bigint_binary_operators(const uint8_t *left, uint8_t left_negative,
-                                 const uint8_t *right, uint8_t right_negative,
-                                 uint8_t *result, size_t arr_size,
-                                 BinaryOperator operators);
+uint32_t bigint_binary_operator(const uint8_t *left, uint8_t left_negative, size_t left_arr_size,
+                                 const uint8_t *right, uint8_t right_negative, size_t right_arr_size,
+                                 uint8_t *result, size_t result_arr_size,
+                                 BinaryOperator binary_operator);
 
-uint32_t bigint_exp_mod(const uint8_t *left, uint8_t left_negative,
-                        const uint8_t *right, uint8_t right_negative,
-                        const uint8_t *mod, uint8_t mod_negative,
-                        uint8_t *result, size_t arr_siz);
+uint32_t bigint_exp_mod(const uint8_t *left, uint8_t left_negative, size_t left_arr_size,
+                        const uint8_t *right, uint8_t right_negative, size_t right_arr_size,
+                        const uint8_t *mod, uint8_t mod_negative, size_t mod_arr_size,
+                        uint8_t *result, size_t result_arr_siz);
 
-int32_t bigint_cmp(const uint8_t *left, uint8_t left_negative,
-                   const uint8_t *right, uint8_t right_negative,
-                   size_t arr_size);
+int32_t bigint_cmp(const uint8_t *left, uint8_t left_negative, size_t left_arr_size,
+                   const uint8_t *right, uint8_t right_negative, size_t right_arr_size);
 
 enum ShiftDirection {
   LEFT = 0x01,
   RIGHT = 0x02,
 };
 
-uint32_t bigint_sh(const uint8_t *origin, uint8_t origin_negative, uint32_t n,
-                   uint8_t *result, size_t arr_size, ShiftDirection direction);
+uint32_t bigint_sh(const uint8_t *origin, uint8_t origin_negative, size_t origin_arr_size,
+                   uint8_t *result, size_t result_arr_size, uint32_t shift_num, ShiftDirection direction);
 
-uint32_t string_literal_operator(const uint8_t *str, size_t str_len,
-                                 uint8_t *result, size_t arr_size);
+uint32_t string_convert_operator(const uint8_t *str, size_t str_len, uint8_t *result, size_t result_arr_size);
 
 #ifdef __cplusplus
 }

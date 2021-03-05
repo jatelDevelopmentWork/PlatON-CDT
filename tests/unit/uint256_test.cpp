@@ -89,7 +89,7 @@ TEST_CASE(uint256, mod) {
   }
 
   ASSERT_EQ(orign, std::uint256_t(3));
-  orign += 2;
+  orign += std::uint256_t(2);
   orign %= other;
   ASSERT_EQ(orign, std::uint256_t(5));
 }
@@ -105,7 +105,7 @@ TEST_CASE(uint256, and) {
   }
 
   ASSERT_EQ(orign, std::uint256_t(100));
-  orign = orign & 0xff;
+  orign = orign & std::uint256_t(0xff);
   ASSERT_EQ(orign, std::uint256_t(100));
 }
 
@@ -120,7 +120,7 @@ TEST_CASE(uint256, or) {
   }
 
   ASSERT_EQ(orign, std::uint256_t(503));
-  orign = orign | 0xff;
+  orign = orign | std::uint256_t(0xff);
   ASSERT_EQ(orign, std::uint256_t(511));
 }
 
@@ -135,7 +135,7 @@ TEST_CASE(uint256, xor) {
   }
 
   ASSERT_EQ(orign, std::uint256_t(403));
-  orign = orign ^ 0xff;
+  orign = orign ^ std::uint256_t(0xff);
   ASSERT_EQ(orign, std::uint256_t(364));
 }
 
@@ -265,9 +265,21 @@ TEST_CASE(uint256, encode) {
   ASSERT_EQ(result, std::uint256_t(258));
 
   std::vector<uint8_t> new_bytes;
+  auto func = [](std::vector<uint8_t> &result, uint8_t one) { result.push_back(one); };
   {
     GasUsed(__LINE__, fn);
-    new_bytes = result.ToBigEndian();
+    result.ToBigEndian(new_bytes, func);
+  }
+
+  auto it = new_bytes.begin();
+  while(1){
+    if(it == new_bytes.end()) break;
+
+    if(0 == *it){
+      it = new_bytes.erase(it);
+    } else {
+      break;
+    }
   }
 
   ASSERT_EQ(new_bytes, test_bytes);
