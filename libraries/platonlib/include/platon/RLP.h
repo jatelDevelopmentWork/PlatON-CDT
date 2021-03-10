@@ -24,6 +24,7 @@
 #include "fixedhash.hpp"
 #include "panic.hpp"
 #include "vector_ref.h"
+#include "bigint.hpp"
 
 namespace platon {
 
@@ -720,6 +721,15 @@ class RLPStream {
 
   template <typename... Args>
   RLPStream& operator<<(const std::tuple<Args...>& t);
+
+  template <size_t Bits, bool Signed>
+  RLPStream &operator<<(const std::WideInteger<Bits, Signed> &s)
+  {
+    auto func = [](std::vector<uint8_t> &result, uint8_t one) { result.push_back(one); };
+    std::vector<uint8_t> temp;
+    s.ToBigEndian(temp, func);
+    return append(temp);
+  }
 
   /// Clear the output stream so far.
   void clear() {

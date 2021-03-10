@@ -13,6 +13,7 @@
 
 #include "RLP.h"
 #include "common.h"
+#include "platon/bigint.hpp"
 
 namespace platon {
 
@@ -154,6 +155,15 @@ class RLPSize {
   RLPSize& append(double d) {
     uint64_t i = *reinterpret_cast<uint64_t*>(&d);
     return append(i);
+  }
+
+  template <size_t Bits, bool Signed>
+  RLPSize &append(const std::WideInteger<Bits, Signed> &s)
+  {
+    auto func = [](std::vector<uint8_t> &result, uint8_t one) { result.push_back(one); };
+    bytes temp;
+    s.ToBigEndian(temp, func);
+    return append(temp);
   }
 
   template <

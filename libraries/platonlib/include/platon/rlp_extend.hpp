@@ -11,6 +11,7 @@
 #include <tuple>
 #include "platon/RLP.h"
 #include "panic.hpp"
+#include "platon/bigint.hpp"
 
 namespace platon {
 
@@ -200,6 +201,12 @@ inline void fetch(const RLP& rlp, std::tuple<Args...>& t) {
     fetch(rlp[vect_index], i);
     vect_index++;
   });
+}
+
+template <size_t Bits, bool Signed>
+inline void fetch(const RLP& rlp, std::WideInteger<Bits, Signed> &s) {
+  bytes temp = rlp.toBytes();
+  s.FromBigEndian(temp);
 }
 
 }  // namespace platon
