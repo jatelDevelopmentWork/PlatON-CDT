@@ -9,7 +9,6 @@
 
 namespace std
 {
-
   template <size_t Bits, bool Signed>
   class WideInteger
   {
@@ -146,7 +145,7 @@ namespace std
     WideInteger(const char *str, size_t str_len)
     {
       uint32_t operator_result = string_convert_operator(
-          reinterpret_cast<const uint8_t *>(str), str_len, arr_, arr_size);
+          reinterpret_cast<const uint8_t *>(str), str_len,  &(arr_[0]), arr_size);
       negative_ = BigintResultFlag::NEGATIVE & operator_result;
       overflow_ = BigintResultFlag::OVERFLOW & operator_result;
     }
@@ -170,7 +169,7 @@ namespace std
     WideInteger<Bits, Signed> &FromLittleEndian(const container &bytes)
     {
       static_assert(!Signed, "Only unsigned numbers can do this");
-      memset(arr_, 0, arr_size);
+      arr_.fill(0);
       auto it = bytes.begin();
       for (int i = arr_size - 1; i >= 0 && it != bytes.end(); ++it, --i)
       {
@@ -195,7 +194,7 @@ namespace std
     WideInteger<Bits, Signed> &FromBigEndian(const container &bytes)
     {
       static_assert(!Signed, "Only unsigned numbers can do this");
-      memset(arr_, 0, arr_size);
+      arr_.fill(0);
       size_t len = bytes.size();
       if (len >= arr_size)
       {
@@ -237,8 +236,8 @@ namespace std
     {
       typename WideType<WideInteger<Bits, Signed>, WideInteger<Bits2, Signed2>>::type result;
       uint32_t operator_result =
-          bigint_binary_operator(arr_, negative_, arr_size, &(rhs.arr_[0]), rhs.negative_, rhs.arr_size,
-                                 result.arr_, result.arr_size, BinaryOperator::ADD);
+          bigint_binary_operator( &(arr_[0]), negative_, arr_size, &(rhs.arr_[0]), rhs.negative_, rhs.arr_size,
+                                 &(result.arr_[0]), result.arr_size, BinaryOperator::ADD);
       result.negative_ = BigintResultFlag::NEGATIVE & operator_result;
       result.overflow_ = BigintResultFlag::OVERFLOW & operator_result;
       return result;
@@ -248,8 +247,8 @@ namespace std
     WideInteger<Bits, Signed> &operator+=(const WideInteger<Bits2, Signed2> &rhs)
     {
       uint32_t operator_result =
-          bigint_binary_operator(arr_, negative_, arr_size, &(rhs.arr_[0]), rhs.negative_, rhs.arr_size,
-                                 arr_, arr_size, BinaryOperator::ADD);
+          bigint_binary_operator( &(arr_[0]), negative_, arr_size, &(rhs.arr_[0]), rhs.negative_, rhs.arr_size,
+                                 &(arr_[0]), arr_size, BinaryOperator::ADD);
       negative_ = BigintResultFlag::NEGATIVE & operator_result;
       overflow_ = BigintResultFlag::OVERFLOW & operator_result;
       return *this;
@@ -262,8 +261,8 @@ namespace std
     {
       typename WideType<WideInteger<Bits, Signed>, WideInteger<Bits2, Signed2>>::type result;
       uint32_t operator_result =
-          bigint_binary_operator(arr_, negative_, arr_size, &(rhs.arr_[0]), rhs.negative_, rhs.arr_size,
-                                 result.arr_, result.arr_size, BinaryOperator::SUB);
+          bigint_binary_operator( &(arr_[0]), negative_, arr_size, &(rhs.arr_[0]), rhs.negative_, rhs.arr_size,
+                                 &(result.arr_[0]), result.arr_size, BinaryOperator::SUB);
       result.negative_ = BigintResultFlag::NEGATIVE & operator_result;
       result.overflow_ = BigintResultFlag::OVERFLOW & operator_result;
       return result;
@@ -273,18 +272,18 @@ namespace std
     WideInteger<Bits, Signed> &operator-=(const WideInteger<Bits2, Signed2> &rhs)
     {
       uint32_t operator_result =
-          bigint_binary_operator(arr_, negative_, arr_size, &(rhs.arr_[0]), rhs.negative_, rhs.arr_size,
-                                 arr_, arr_size, BinaryOperator::SUB);
+          bigint_binary_operator( &(arr_[0]), negative_, arr_size, &(rhs.arr_[0]), rhs.negative_, rhs.arr_size,
+                                 &(arr_[0]), arr_size, BinaryOperator::SUB);
       negative_ = BigintResultFlag::NEGATIVE & operator_result;
       overflow_ = BigintResultFlag::OVERFLOW & operator_result;
       return *this;
     }
 
-    constexpr WideInteger<Bits, Signed> operator-() const
+    constexpr WideInteger<Bits, Signed> operator-() const   
     {
       static_assert(Signed, "Only signed numbers can do this");
       WideInteger<Bits, Signed> result = *this;
-      result.Neg();
+      result.Opposite();
       return result;
     }
 
@@ -295,8 +294,8 @@ namespace std
     {
       typename WideType<WideInteger<Bits, Signed>, WideInteger<Bits2, Signed2>>::type result;
       uint32_t operator_result =
-          bigint_binary_operator(arr_, negative_, arr_size, &(rhs.arr_[0]), rhs.negative_, rhs.arr_size,
-                                 result.arr_, result.arr_size, BinaryOperator::MUL);
+          bigint_binary_operator( &(arr_[0]), negative_, arr_size, &(rhs.arr_[0]), rhs.negative_, rhs.arr_size,
+                                 &(result.arr_[0]), result.arr_size, BinaryOperator::MUL);
       result.negative_ = BigintResultFlag::NEGATIVE & operator_result;
       result.overflow_ = BigintResultFlag::OVERFLOW & operator_result;
       return result;
@@ -306,8 +305,8 @@ namespace std
     WideInteger<Bits, Signed> &operator*=(const WideInteger<Bits2, Signed2> &rhs)
     {
       uint32_t operator_result =
-          bigint_binary_operator(arr_, negative_, arr_size, &(rhs.arr_[0]), rhs.negative_, rhs.arr_size,
-                                 arr_, arr_size, BinaryOperator::MUL);
+          bigint_binary_operator( &(arr_[0]), negative_, arr_size, &(rhs.arr_[0]), rhs.negative_, rhs.arr_size,
+                                 &(arr_[0]), arr_size, BinaryOperator::MUL);
       negative_ = BigintResultFlag::NEGATIVE & operator_result;
       overflow_ = BigintResultFlag::OVERFLOW & operator_result;
       return *this;
@@ -320,8 +319,8 @@ namespace std
     {
       typename WideType<WideInteger<Bits, Signed>, WideInteger<Bits2, Signed2>>::type result;
       uint32_t operator_result =
-          bigint_binary_operator(arr_, negative_, arr_size, &(rhs.arr_[0]), rhs.negative_, rhs.arr_size,
-                                 result.arr_, result.arr_size, BinaryOperator::DIV);
+          bigint_binary_operator( &(arr_[0]), negative_, arr_size, &(rhs.arr_[0]), rhs.negative_, rhs.arr_size,
+                                 &(result.arr_[0]), result.arr_size, BinaryOperator::DIV);
       result.negative_ = BigintResultFlag::NEGATIVE & operator_result;
       result.overflow_ = BigintResultFlag::OVERFLOW & operator_result;
       return result;
@@ -331,8 +330,8 @@ namespace std
     WideInteger<Bits, Signed> &operator/=(const WideInteger<Bits2, Signed2> &rhs)
     {
       uint32_t operator_result =
-          bigint_binary_operator(arr_, negative_, arr_size, &(rhs.arr_[0]), rhs.negative_, rhs.arr_size,
-                                 arr_, arr_size, BinaryOperator::DIV);
+          bigint_binary_operator( &(arr_[0]), negative_, arr_size, &(rhs.arr_[0]), rhs.negative_, rhs.arr_size,
+                                 &(arr_[0]), arr_size, BinaryOperator::DIV);
       negative_ = BigintResultFlag::NEGATIVE & operator_result;
       overflow_ = BigintResultFlag::OVERFLOW & operator_result;
       return *this;
@@ -345,8 +344,8 @@ namespace std
     {
       typename WideType<WideInteger<Bits, Signed>, WideInteger<Bits2, Signed2>>::type result;
       uint32_t operator_result =
-          bigint_binary_operator(arr_, negative_, arr_size, &(rhs.arr_[0]), rhs.negative_, rhs.arr_size,
-                                 result.arr_, result.arr_size, BinaryOperator::MOD);
+          bigint_binary_operator( &(arr_[0]), negative_, arr_size, &(rhs.arr_[0]), rhs.negative_, rhs.arr_size,
+                                 &(result.arr_[0]), result.arr_size, BinaryOperator::MOD);
       result.negative_ = BigintResultFlag::NEGATIVE & operator_result;
       result.overflow_ = BigintResultFlag::OVERFLOW & operator_result;
       return result;
@@ -356,8 +355,8 @@ namespace std
     WideInteger<Bits, Signed> &operator%=(const WideInteger<Bits2, Signed2> &rhs)
     {
       uint32_t operator_result =
-          bigint_binary_operator(arr_, negative_, arr_size, &(rhs.arr_[0]), rhs.negative_, rhs.arr_size,
-                                 arr_, arr_size, BinaryOperator::MOD);
+          bigint_binary_operator( &(arr_[0]), negative_, arr_size, &(rhs.arr_[0]), rhs.negative_, rhs.arr_size,
+                                 &(arr_[0]), arr_size, BinaryOperator::MOD);
       negative_ = BigintResultFlag::NEGATIVE & operator_result;
       overflow_ = BigintResultFlag::OVERFLOW & operator_result;
       return *this;
@@ -370,8 +369,8 @@ namespace std
     {
       typename WideType<WideInteger<Bits, Signed>, WideInteger<Bits2, Signed2>>::type result;
       uint32_t operator_result =
-          bigint_binary_operator(arr_, negative_, arr_size, &(rhs.arr_[0]), rhs.negative_, rhs.arr_size,
-                                 result.arr_, result.arr_size, BinaryOperator::AND);
+          bigint_binary_operator( &(arr_[0]), negative_, arr_size, &(rhs.arr_[0]), rhs.negative_, rhs.arr_size,
+                                 &(result.arr_[0]), result.arr_size, BinaryOperator::AND);
       result.negative_ = BigintResultFlag::NEGATIVE & operator_result;
       result.overflow_ = BigintResultFlag::OVERFLOW & operator_result;
       return result;
@@ -382,8 +381,8 @@ namespace std
         const WideInteger<Bits2, Signed2> &rhs) noexcept
     {
       uint32_t operator_result =
-          bigint_binary_operator(arr_, negative_, arr_size, &(rhs.arr_[0]), rhs.negative_, rhs.arr_size,
-                                 arr_, arr_size, BinaryOperator::AND);
+          bigint_binary_operator( &(arr_[0]), negative_, arr_size, &(rhs.arr_[0]), rhs.negative_, rhs.arr_size,
+                                 &(arr_[0]), arr_size, BinaryOperator::AND);
       negative_ = BigintResultFlag::NEGATIVE & operator_result;
       overflow_ = BigintResultFlag::OVERFLOW & operator_result;
       return *this;
@@ -396,8 +395,8 @@ namespace std
     {
       typename WideType<WideInteger<Bits, Signed>, WideInteger<Bits2, Signed2>>::type result;
       uint32_t operator_result =
-          bigint_binary_operator(arr_, negative_, arr_size, &(rhs.arr_[0]), rhs.negative_, rhs.arr_size,
-                                 result.arr_, result.arr_size, BinaryOperator::OR);
+          bigint_binary_operator( &(arr_[0]), negative_, arr_size, &(rhs.arr_[0]), rhs.negative_, rhs.arr_size,
+                                 &(result.arr_[0]), result.arr_size, BinaryOperator::OR);
       result.negative_ = BigintResultFlag::NEGATIVE & operator_result;
       result.overflow_ = BigintResultFlag::OVERFLOW & operator_result;
       return result;
@@ -407,8 +406,8 @@ namespace std
     WideInteger<Bits, Signed> &operator|=(const WideInteger<Bits2, Signed2> &rhs)
     {
       uint32_t operator_result =
-          bigint_binary_operator(arr_, negative_, arr_size, &(rhs.arr_[0]), rhs.negative_, rhs.arr_size,
-                                 arr_, arr_size, BinaryOperator::OR);
+          bigint_binary_operator( &(arr_[0]), negative_, arr_size, &(rhs.arr_[0]), rhs.negative_, rhs.arr_size,
+                                 &(arr_[0]), arr_size, BinaryOperator::OR);
       negative_ = BigintResultFlag::NEGATIVE & operator_result;
       overflow_ = BigintResultFlag::OVERFLOW & operator_result;
       return *this;
@@ -421,8 +420,8 @@ namespace std
     {
       typename WideType<WideInteger<Bits, Signed>, WideInteger<Bits2, Signed2>>::type result;
       uint32_t operator_result =
-          bigint_binary_operator(arr_, negative_, arr_size, &(rhs.arr_[0]), rhs.negative_, rhs.arr_size,
-                                 result.arr_, result.arr_size, BinaryOperator::XOR);
+          bigint_binary_operator( &(arr_[0]), negative_, arr_size, &(rhs.arr_[0]), rhs.negative_, rhs.arr_size,
+                                 &(result.arr_[0]), result.arr_size, BinaryOperator::XOR);
       result.negative_ = BigintResultFlag::NEGATIVE & operator_result;
       result.overflow_ = BigintResultFlag::OVERFLOW & operator_result;
       return result;
@@ -432,8 +431,8 @@ namespace std
     WideInteger<Bits, Signed> &operator^=(const WideInteger<Bits2, Signed2> &rhs)
     {
       uint32_t operator_result =
-          bigint_binary_operator(arr_, negative_, arr_size, &(rhs.arr_[0]), rhs.negative_, rhs.arr_size,
-                                 arr_, arr_size, BinaryOperator::XOR);
+          bigint_binary_operator( &(arr_[0]), negative_, arr_size, &(rhs.arr_[0]), rhs.negative_, rhs.arr_size,
+                                 &(arr_[0]), arr_size, BinaryOperator::XOR);
       negative_ = BigintResultFlag::NEGATIVE & operator_result;
       overflow_ = BigintResultFlag::OVERFLOW & operator_result;
       return *this;
@@ -451,7 +450,7 @@ namespace std
       else
       {
         WideInteger<Bits, Signed> temp;
-        temp.Fill();
+        temp.Fill(0xff);
         result = *this | temp;
       }
       return result;
@@ -462,7 +461,7 @@ namespace std
     bool operator==(const WideInteger<Bits2, Signed2> &rhs) const
     {
       int result =
-          bigint_cmp(arr_, negative_, arr_size, &(rhs.arr_[0]), rhs.negative_, rhs.arr_size);
+          bigint_cmp( &(arr_[0]), negative_, arr_size, &(rhs.arr_[0]), rhs.negative_, rhs.arr_size);
       return 0 == result;
     }
 
@@ -477,7 +476,7 @@ namespace std
     bool operator<(const WideInteger<Bits2, Signed2> &rhs) const
     {
       int result =
-          bigint_cmp(arr_, negative_, arr_size, &(rhs.arr_[0]), rhs.negative_, rhs.arr_size);
+          bigint_cmp( &(arr_[0]), negative_, arr_size, &(rhs.arr_[0]), rhs.negative_, rhs.arr_size);
       return -1 == result;
     }
 
@@ -531,7 +530,7 @@ namespace std
     WideInteger<Bits, Signed> operator<<(uint32_t n) const
     {
       WideInteger<Bits, Signed> result;
-      uint32_t operator_result = bigint_sh(arr_, negative_, arr_size, &(result.arr_[0]),
+      uint32_t operator_result = bigint_sh( &(arr_[0]), negative_, arr_size, &(result.arr_[0]),
                                            arr_size, n, ShiftDirection::LEFT);
       result.negative_ = BigintResultFlag::NEGATIVE & operator_result;
       result.overflow_ = BigintResultFlag::OVERFLOW & operator_result;
@@ -541,7 +540,7 @@ namespace std
     WideInteger<Bits, Signed> &operator<<=(uint32_t n)
     {
       uint32_t operator_result =
-          bigint_sh(arr_, negative_, arr_size, arr_, arr_size, n, ShiftDirection::LEFT);
+          bigint_sh( &(arr_[0]), negative_, arr_size, &(arr_[0]), arr_size, n, ShiftDirection::LEFT);
       negative_ = BigintResultFlag::NEGATIVE & operator_result;
       overflow_ = BigintResultFlag::OVERFLOW & operator_result;
       return *this;
@@ -551,7 +550,7 @@ namespace std
     WideInteger<Bits, Signed> operator>>(uint32_t n) const
     {
       WideInteger<Bits, Signed> result;
-      uint32_t operator_result = bigint_sh(arr_, negative_, arr_size, &(result.arr_[0]),
+      uint32_t operator_result = bigint_sh( &(arr_[0]), negative_, arr_size, &(result.arr_[0]),
                                            arr_size, n, ShiftDirection::RIGHT);
       result.negative_ = BigintResultFlag::NEGATIVE & operator_result;
       result.overflow_ = BigintResultFlag::OVERFLOW & operator_result;
@@ -561,7 +560,7 @@ namespace std
     WideInteger<Bits, Signed> &operator>>=(uint32_t n)
     {
       uint32_t operator_result =
-          bigint_sh(arr_, negative_, arr_size, arr_, arr_size, n, ShiftDirection::RIGHT);
+          bigint_sh( &(arr_[0]), negative_, arr_size, &(arr_[0]), arr_size, n, ShiftDirection::RIGHT);
       negative_ = BigintResultFlag::NEGATIVE & operator_result;
       overflow_ = BigintResultFlag::OVERFLOW & operator_result;
       return *this;
@@ -577,31 +576,31 @@ namespace std
       typename WideType<typename WideType<WideInteger<Bits, Signed>, WideInteger<Bits2, Signed2>>::type, WideInteger<Bits3, Signed3>>::type result;
       uint32_t operator_result = bigint_exp_mod(
           &(left.arr_[0]), left.negative_, left.arr_size, &(right.arr_[0]), right.negative_, right.arr_size,
-          &(mod.arr_[0]), mod.negative_, mod.arr_size, result.arr_, result.arr_size);
+          &(mod.arr_[0]), mod.negative_, mod.arr_size, &(result.arr_[0]), result.arr_size);
       result.negative_ = BigintResultFlag::NEGATIVE & operator_result;
       result.overflow_ = BigintResultFlag::OVERFLOW & operator_result;
       return result;
     }
 
-    bool Overflow() { return overflow_; }
+    bool Overflow() const { return overflow_; }
 
-    uint8_t *Value() { return arr_; }
+    bool Negative() const { return negative_; }
+    void SetNegative(bool negative) { negative_ = negative; }
+
+    std::array<uint8_t, arr_size> Value() { return  arr_; }
 
   private:
-    void Neg() { negative_ = !negative_; }
+    void Opposite() { negative_ = !negative_; }
 
-    void Fill()
+    void Fill(uint8_t value)
     {
-      for (int i = 0; i < arr_size; i++)
-      {
-        arr_[i] = 0xff;
-      }
+      arr_.fill(value);
     }
 
   public:
     bool negative_ = false;
     bool overflow_ = false;
-    uint8_t arr_[arr_size] = {};
+    std::array<uint8_t, arr_size> arr_ = {};
   };
 
   // Type instance

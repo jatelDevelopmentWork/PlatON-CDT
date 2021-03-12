@@ -160,10 +160,16 @@ class RLPSize {
   template <size_t Bits, bool Signed>
   RLPSize &append(const std::WideInteger<Bits, Signed> &s)
   {
+    bool negative = s.Negative();
+
     auto func = [](std::vector<uint8_t> &result, uint8_t one) { result.push_back(one); };
     bytes temp;
     s.ToBigEndian(temp, func);
-    return append(temp);
+
+    *this << RLPSize::list_start();
+    *this << negative << temp;
+    *this << RLPSize::list_end();
+    return *this;
   }
 
   template <

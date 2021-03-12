@@ -725,10 +725,18 @@ class RLPStream {
   template <size_t Bits, bool Signed>
   RLPStream &operator<<(const std::WideInteger<Bits, Signed> &s)
   {
-    auto func = [](std::vector<uint8_t> &result, uint8_t one) { result.push_back(one); };
+    // get nagative flag
+    bool negative = s.Negative();
+
+    // get big endian data
     std::vector<uint8_t> temp;
+    auto func = [](std::vector<uint8_t> &result, uint8_t one) { result.push_back(one); };
     s.ToBigEndian(temp, func);
-    return append(temp);
+
+    appendList(2);
+    *this << negative << temp;
+
+    return *this;
   }
 
   /// Clear the output stream so far.

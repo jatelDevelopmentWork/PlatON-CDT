@@ -205,8 +205,16 @@ inline void fetch(const RLP& rlp, std::tuple<Args...>& t) {
 
 template <size_t Bits, bool Signed>
 inline void fetch(const RLP& rlp, std::WideInteger<Bits, Signed> &s) {
-  bytes temp = rlp.toBytes();
+  auto iter = rlp.begin();
+  bool negative;
+  fetch(*iter, negative);
+
+  std::vector<uint8_t> temp;
+  ++iter;
+  fetch(*iter, temp);
+
   s.FromBigEndian(temp);
+  s.SetNegative(negative);
 }
 
 }  // namespace platon
