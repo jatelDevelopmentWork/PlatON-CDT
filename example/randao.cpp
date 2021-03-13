@@ -70,7 +70,7 @@ public:
     PLATON_EVENT2(LogReveal, std::uint256_t, platon::Address, std::uint256_t);
 
 public:
-    void init() { founder.self() = platon_caller(); }
+    ACTION void init() { founder.self() = platon_caller(); }
 
     /**
      * @brief 随机数需求方，想要生成随机数，首先需要新建一轮活动，需要使用 NewCampaign 函数
@@ -87,7 +87,7 @@ public:
      * @return 活动 ID 号
      * 
      */
-    ACTION std::uint256_t NewCampaign(uint64_t burn_num, const std::uint256_t &deposit, uint16_t commit_balkline, uint16_t commit_deadline)
+    ACTION ACTION std::uint256_t NewCampaign(uint64_t burn_num, const std::uint256_t &deposit, uint16_t commit_balkline, uint16_t commit_deadline)
     {
         // check parameter
         if (platon_block_number() >= burn_num)
@@ -126,9 +126,8 @@ public:
      * 
      * @param campaign_id 已存在的活动 id
      * 
-     * 
      */
-    void Follow(std::uint256_t campaign_id)
+    ACTION void Follow(std::uint256_t campaign_id)
     {
         // check parameter
         if (campaign_id > std::uint256_t(campaigns.self().size()))
@@ -156,7 +155,7 @@ public:
      * @param hs 随机数的 sh3 值
      *  
      */
-    void Commit(std::uint256_t campaign_id, const bytes32 &hs)
+    ACTION void Commit(std::uint256_t campaign_id, const bytes32 &hs)
     {
         // check parameter
         if (campaign_id > std::uint256_t(campaigns.self().size())) platon_revert();
@@ -188,7 +187,7 @@ public:
      * @param s 随机数
      *  
      */
-    void Reveal(std::uint256_t campaign_id, std::uint256_t s)
+    ACTION void Reveal(std::uint256_t campaign_id, std::uint256_t s)
     {
         // check parameter
         if (campaign_id > std::uint256_t(campaigns.self().size())) platon_revert();
@@ -226,7 +225,7 @@ public:
      * @param campaign_id 已存在的活动 id
      *  
      */
-    std::uint256_t GetRandom(std::uint256_t campaign_id)
+    CONST std::uint256_t GetRandom(std::uint256_t campaign_id)
     {
         // check parameter
         if (campaign_id > std::uint256_t(campaigns.self().size())) platon_revert();
@@ -279,7 +278,7 @@ public:
         platon_transfer(addr, &temp[0], temp.size());
     }
 
-    void GetMyBounty(std::uint256_t campaign_id)
+    ACTION void GetMyBounty(std::uint256_t campaign_id)
     {
         // check parameter
         if (campaign_id > std::uint256_t(campaigns.self().size())) platon_revert();
@@ -311,7 +310,7 @@ public:
      * @param campaign_id 已存在的活动 id
      *  
      */
-    void RefundBounty(std::uint256_t campaign_id)
+    ACTION void RefundBounty(std::uint256_t campaign_id)
     {
         // check parameter
         if (campaign_id > std::uint256_t(campaigns.self().size())) platon_revert();

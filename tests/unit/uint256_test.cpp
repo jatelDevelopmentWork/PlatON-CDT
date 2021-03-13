@@ -5,6 +5,13 @@
 
 using namespace platon;
 
+TEST_CASE(uint256, compile){
+  constexpr std::uint256_t orign = 100;
+  std::uint512_t other = orign;
+  ASSERT_EQ(orign, std::uint256_t(100));
+  ASSERT_EQ(orign, other);
+}
+
 TEST_CASE(uint256, assign) {
   const char *fn = "assign";
   std::uint256_t orign(30);
@@ -15,7 +22,7 @@ TEST_CASE(uint256, assign) {
     orign = other;
   }
 
-  ASSERT_EQ(orign, orign);
+  ASSERT_EQ(orign, other);
 }
 
 TEST_CASE(uint256, add) {
@@ -31,6 +38,11 @@ TEST_CASE(uint256, add) {
   ASSERT_EQ(orign, std::uint256_t(445));
   orign += other;
   ASSERT_EQ(orign, std::uint256_t(688));
+
+  orign = orign + 12;
+  ASSERT_EQ(orign, std::uint256_t(700));
+  orign += 100;
+  ASSERT_EQ(orign, std::uint256_t(800));
 }
 
 TEST_CASE(uint256, sub) {
@@ -46,6 +58,10 @@ TEST_CASE(uint256, sub) {
   ASSERT_EQ(orign, std::uint256_t(178));
   orign -= other;
   ASSERT_EQ(orign, std::uint256_t(154));
+  orign = orign - 4;
+  ASSERT_EQ(orign, std::uint256_t(150));
+  orign -= 50;
+  ASSERT_EQ(orign, std::uint256_t(100));
 }
 
 TEST_CASE(uint256, multip) {
@@ -61,6 +77,10 @@ TEST_CASE(uint256, multip) {
   ASSERT_EQ(orign, std::uint256_t(4848));
   orign /= other;
   ASSERT_EQ(orign, std::uint256_t(202));
+  orign = orign * 10;
+  ASSERT_EQ(orign, std::uint256_t(2020));
+  orign *= 10;
+  ASSERT_EQ(orign, std::uint256_t(20200));
 }
 
 TEST_CASE(uint256, division) {
@@ -76,6 +96,12 @@ TEST_CASE(uint256, division) {
   ASSERT_EQ(orign, std::uint256_t(8));
   orign /= other;
   ASSERT_EQ(orign, std::uint256_t(0));
+  orign = 100;
+  orign = orign / 10;
+  ASSERT_EQ(orign, std::uint256_t(10));
+  orign /= 10;
+  ASSERT_EQ(orign, std::uint256_t(1));
+
 }
 
 TEST_CASE(uint256, mod) {
@@ -92,6 +118,10 @@ TEST_CASE(uint256, mod) {
   orign += std::uint256_t(2);
   orign %= other;
   ASSERT_EQ(orign, std::uint256_t(5));
+  orign = orign % 3;
+  ASSERT_EQ(orign, std::uint256_t(2));
+  orign %= 3;
+  ASSERT_EQ(orign, std::uint256_t(2));
 }
 
 TEST_CASE(uint256, and) {
@@ -107,6 +137,10 @@ TEST_CASE(uint256, and) {
   ASSERT_EQ(orign, std::uint256_t(100));
   orign = orign & std::uint256_t(0xff);
   ASSERT_EQ(orign, std::uint256_t(100));
+  orign = orign & 0x0f;
+  ASSERT_EQ(orign, std::uint256_t(4));
+  orign &= 2;
+  ASSERT_EQ(orign, std::uint256_t(0));
 }
 
 TEST_CASE(uint256, or) {
@@ -122,6 +156,11 @@ TEST_CASE(uint256, or) {
   ASSERT_EQ(orign, std::uint256_t(503));
   orign = orign | std::uint256_t(0xff);
   ASSERT_EQ(orign, std::uint256_t(511));
+  orign = 100;
+  orign = orign | 0xff;
+  ASSERT_EQ(orign, std::uint256_t(0xff));
+  orign |= 0x0fff;
+  ASSERT_EQ(orign, std::uint256_t(0x0fff));
 }
 
 TEST_CASE(uint256, xor) {
@@ -137,6 +176,11 @@ TEST_CASE(uint256, xor) {
   ASSERT_EQ(orign, std::uint256_t(403));
   orign = orign ^ std::uint256_t(0xff);
   ASSERT_EQ(orign, std::uint256_t(364));
+  orign = 100;
+  orign = orign ^ 0xff;
+  ASSERT_EQ(orign, std::uint256_t(0x9b));
+  orign ^= 0xff;
+  ASSERT_EQ(orign, std::uint256_t(100));
 }
 
 TEST_CASE(uint256, left_shift) {
@@ -208,6 +252,9 @@ TEST_CASE(int256_t, compare) {
   orign += other;
   compare_result = orign < other;
   ASSERT_EQ(compare_result, true);
+  orign = -200;
+  compare_result = orign < -300;
+  ASSERT_EQ(compare_result, false);
 }
 
 TEST_CASE(uint256, overflow) {
@@ -286,6 +333,7 @@ TEST_CASE(uint256, encode) {
 }
 
 UNITTEST_MAIN() {
+  RUN_TEST(uint256, compile);
   RUN_TEST(uint256, assign);
   RUN_TEST(uint256, add);
   RUN_TEST(uint256, sub);
