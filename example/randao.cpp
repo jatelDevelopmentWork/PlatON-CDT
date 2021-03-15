@@ -87,7 +87,7 @@ public:
      * @return 活动 ID 号
      * 
      */
-    ACTION ACTION std::uint256_t NewCampaign(uint64_t burn_num, const std::uint256_t &deposit, uint16_t commit_balkline, uint16_t commit_deadline)
+    ACTION std::uint256_t NewCampaign(uint64_t burn_num, const std::uint256_t &deposit, uint16_t commit_balkline, uint16_t commit_deadline)
     {
         // check parameter
         if (platon_block_number() >= burn_num)
